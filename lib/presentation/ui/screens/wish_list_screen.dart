@@ -7,8 +7,8 @@ class WishListScreen extends StatefulWidget{
   State<StatefulWidget> createState() {
     return _WishListScreenState();
   }
-
 }
+
 class _WishListScreenState extends State<WishListScreen>{
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,9 @@ class _WishListScreenState extends State<WishListScreen>{
           child: GridView.builder(
               itemCount: 20,
               itemBuilder: (context,index){
-               // return ProductCard();
+              // return ProductCard(
+                //product: ProductListByCategoryController.productList[index],
+               //);
               },
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,

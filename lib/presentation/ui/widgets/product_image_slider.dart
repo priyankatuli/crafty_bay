@@ -1,14 +1,18 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ecommerce_project/presentation/ui/utils/assets_path.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/app_colors.dart';
 
 class ProductImageSlider extends StatefulWidget{
+
+  ProductImageSlider({super.key,required this.sliderUrls});
+
   @override
   State<StatefulWidget> createState() {
       return _ProductImageSliderState();
   }
+
+  final List<String> sliderUrls;
 
 }
 
@@ -28,7 +32,7 @@ class _ProductImageSliderState extends State<ProductImageSlider>{
               viewportFraction: 1,
 
             ),
-            items: [1, 2, 3, 4, 5, 6].map((i) {
+            items: widget.sliderUrls.map((imageUrls) {
               return Builder(
                   builder: (BuildContext context) {
                     return Container(
@@ -36,7 +40,7 @@ class _ProductImageSliderState extends State<ProductImageSlider>{
                       decoration: BoxDecoration(
                           color: Colors.grey.shade100,
                         image: DecorationImage(
-                            image: AssetImage(AssetsPath.dummyProductImage),
+                            image: NetworkImage(imageUrls),
                         )
                       ),
                       //alignment: Alignment.center,
@@ -58,7 +62,7 @@ class _ProductImageSliderState extends State<ProductImageSlider>{
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        for(int i=0;i<6;i++)
+                        for(int i=0;i<widget.sliderUrls.length;i++)
                           Container(
                             height: 12,
                             width: 12,
@@ -66,7 +70,6 @@ class _ProductImageSliderState extends State<ProductImageSlider>{
                             decoration: BoxDecoration(
                               color: _selectedIndex.value == i ? AppColors.themeColor : Colors.white,
                               borderRadius: BorderRadius.circular(12),
-
                             ),
                           ),
                       ],

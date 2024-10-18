@@ -4,6 +4,7 @@ import 'package:ecommerce_project/presentation/state_holders/category_list_contr
 import 'package:ecommerce_project/presentation/state_holders/new_product_list_controller.dart';
 import 'package:ecommerce_project/presentation/state_holders/popular_product_list_controller.dart';
 import 'package:ecommerce_project/presentation/state_holders/special_product_list_controller.dart';
+import 'package:ecommerce_project/presentation/ui/screens/complete_user_profile_screen.dart';
 import 'package:ecommerce_project/presentation/ui/utils/assets_path.dart';
 import 'package:ecommerce_project/presentation/ui/widgets/centered_progress_indicator.dart';
 import 'package:flutter/material.dart';
@@ -54,25 +55,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: SvgPicture.asset(AssetsPath.appLogoNav),
-      backgroundColor: Colors.white,
-      iconTheme: IconThemeData(color: Colors.black54),
-      actions: [
-        AppBarIconButton(
-          onTap: () {},
-          iconData: Icons.person,
-        ),
-        const SizedBox(width: 8,),
-        AppBarIconButton(
-          onTap: () {},
-          iconData: Icons.call,
-        ),
-        const SizedBox(width: 8,),
-        AppBarIconButton(
-          onTap: () {},
-          iconData: Icons.notifications_active_outlined,
-        ),
-      ],
+        title: SvgPicture.asset(AssetsPath.appLogoNav),
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black54),
+        actions: [
+          AppBarIconButton(
+            onTap: () {
+                Get.to(() => CompleteUserProfileScreen());
+            },
+            iconData: Icons.person,
+          ),
+          const SizedBox(width: 8,),
+          AppBarIconButton(
+            onTap: () {},
+            iconData: Icons.call,
+          ),
+          const SizedBox(width: 8,),
+          AppBarIconButton(
+            onTap: () {},
+            iconData: Icons.notifications_active_outlined,
+          ),
+        ],
     );
   }
 

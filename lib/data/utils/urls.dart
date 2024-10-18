@@ -5,6 +5,17 @@ class Urls{
 
   static String productListByRemarksUrl(String remark)
   => '$_baseUrl/ListProductByRemark/$remark';
+  static String listProductByCategory(int categoryId)
+       => '$_baseUrl/ListProductByCategory/$categoryId';
+
+  static String productDetailsById (int productId)
+              => '$_baseUrl/ProductDetailsById/$productId';
+
+  static String userLogin(String email) => '$_baseUrl/UserLogin/$email';
+  static String verifyLogin(String email,String otp) => '$_baseUrl/VerifyLogin/$email/$otp';
+
+  static const String readProfile = '$_baseUrl/ReadProfile';
+
 
 
 }
