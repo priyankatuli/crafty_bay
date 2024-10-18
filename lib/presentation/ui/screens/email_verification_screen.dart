@@ -1,5 +1,8 @@
+import 'package:ecommerce_project/presentation/state_holders/email_verification_controller.dart';
 import 'package:ecommerce_project/presentation/ui/utils/app_constants.dart';
+import 'package:ecommerce_project/presentation/ui/utils/snack_message.dart';
 import 'package:ecommerce_project/presentation/ui/widgets/app_logo_widget.dart';
+import 'package:ecommerce_project/presentation/ui/widgets/centered_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,6 +22,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>{
 
   final TextEditingController _emailTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final EmailVerificationController _emailVerificationController = Get.find<EmailVerificationController>();
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +61,19 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>{
                        },
                      ),
                      const SizedBox(height: 16,),
-                     ElevatedButton(onPressed: (){
-                       if(_formKey.currentState!.validate()){
-                             _moveToNextScreen();
+                     GetBuilder<EmailVerificationController>(
+                       builder: (emailVerificationController) {
+                         return Visibility(
+                           visible: emailVerificationController.inProgress == false,
+                           replacement: CenteredProgressIndicator(),
+                           child: ElevatedButton(onPressed: () {
+                             if (_formKey.currentState!.validate()) {
+                               _moveToNextScreen();
+                             }
+                           }, child: const Text('Next')),
+                         );
                        }
-
-                     }, child: const Text('Next'))
+                     ),
                    ],
               ),
             ),
@@ -70,10 +82,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen>{
       );
   }
 
-void _moveToNextScreen(){
+Future<void> _moveToNextScreen()async{
 
-    Get.to(() => const OtpVerificationScreen());
-
+    bool result = await _emailVerificationController.getEmailVerification(_emailTEController.text.trim());
+    if(result) {
+      Get.to(() => OtpVerificationScreen(email: _emailTEController.text.trim(),));
+    }else{
+      if(mounted) {
+        showSnackBarMessage(
+            context, _emailVerificationController.errorMessage!, true);
+      }
+    }
 }
   @override
   void dispose(){

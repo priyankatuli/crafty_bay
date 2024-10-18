@@ -9,13 +9,13 @@ class NetworkCaller {
 
   NetworkCaller({required this.logger}); // to get logger instance from this line
 
- Future<NetworkResponse> getRequest({required String url}) async{
+ Future<NetworkResponse> getRequest({required String url,String ? token}) async{
 
    try{
      Uri uri = Uri.parse(url);
      _requestLog(url, {}, {}, '');
      final response = await get(uri, headers: {
-       'token': '',
+       'token': '$token',
      });
      if(response.statusCode == 200){
        _responseLog(url, response.statusCode, response.headers, response.body, true);
