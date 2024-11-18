@@ -1,6 +1,5 @@
 import 'package:crafty_bay/presentation/state_holders/bottom_nav_bar_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/cart_list_controller.dart';
-import 'package:crafty_bay/presentation/ui/screens/checkout_screen.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/cart_item_screen.dart';
@@ -18,6 +17,8 @@ class CartListScreen extends StatefulWidget{
 
 }
 class _CartListScreenState extends State<CartListScreen>{
+
+  final cartController = Get.find<CartListController>();
 
   void initState() {
     super.initState();
@@ -67,22 +68,25 @@ class _CartListScreenState extends State<CartListScreen>{
                          return Center(
                            child: Text('Cart list empty'),
                          );
-                       }
-                       return Column(
-                         children: [
-                           Expanded(
-                       child: ListView.builder(
-                                 itemCount: cartListController.cart.length,
-                                 itemBuilder: (context, index) {
-                                   return CartItemScreen(cartItem: cartListController.cart[index],);
-                                 }
+                       } else {
+                         return Column(
+                           children: [
+                             Expanded(
+                               child: ListView.builder(
+                                   itemCount: cartListController.cart.length,
+                                   itemBuilder: (context, index) {
+                                     return CartItemScreen(
+                                       cartItem: cartListController.cart[index],);
+                                   }
+                               ),
                              ),
-                           ),
-                           _buildPriceAndAddToCartSection(),
-                         ],
-                       );
+                             _buildPriceAndAddToCartSection(),
+                           ],
+                         );
+                       }
                      }
                    ),
+
                ),
                ),
      );
@@ -108,7 +112,7 @@ class _CartListScreenState extends State<CartListScreen>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Total Price'),
-              Text('',
+              Text(cartController.totalPrice.toStringAsFixed(1),
                 style: TextStyle(
                     fontSize: 18,
                     color: AppColors.themeColor
@@ -120,7 +124,8 @@ class _CartListScreenState extends State<CartListScreen>{
             width: 140,
             child: ElevatedButton(
                 onPressed: (){
-                     Get.to(() => const CheckoutScreen());
+                    // Get.to(() => const CheckoutScreen());
+                  //navigate to payment screen
                 },
                 child: Text('Checkout',
                   style: TextStyle(

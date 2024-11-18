@@ -1,4 +1,5 @@
 import 'package:crafty_bay/controller_binder.dart';
+import 'package:crafty_bay/presentation/ui/widgets/home/shimmer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 

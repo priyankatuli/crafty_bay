@@ -25,33 +25,44 @@ class HomeScreen extends StatefulWidget{
 class _HomeScreenState extends State<HomeScreen> {
 
 
+  Future<void> _onRefresh()async{
+    await Get.find<CategoryListController>().getCategoryList();
+    await Get.find<PopularProductListController>().getPopularProductList();
+    await Get.find<NewProductListController>().getNewProductList();
+    await Get.find<SpecialProductListController>().getSpecialProductList();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: _buildAppBar(),
-        body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              const SizedBox(height: 16,),
-              //for search bar
-              SearchTextField(textEditingController: TextEditingController()),
-              const SizedBox(height: 16,),
-              HomeBannerSlider(),
-              const SizedBox(height: 16,),
-              _buildCategoriesSection(),
-              const SizedBox(height: 8,),
-              _buildPopularProductSection(),
-              const SizedBox(height: 16,),
-              _buildNewProductSection(),
-              const SizedBox(height: 16,),
-              _buildSpecialProductSection(),
-              const SizedBox(height: 16,)
-            ],
-          ),
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                const SizedBox(height: 16,),
+                //for search bar
+                SearchTextField(textEditingController: TextEditingController()),
+                const SizedBox(height: 16,),
+                HomeBannerSlider(),
+                const SizedBox(height: 16,),
+                _buildCategoriesSection(),
+                const SizedBox(height: 8,),
+                _buildPopularProductSection(),
+                const SizedBox(height: 16,),
+                _buildNewProductSection(),
+                const SizedBox(height: 16,),
+                _buildSpecialProductSection(),
+                const SizedBox(height: 16,)
+              ],
+            ),
+          )
+              ),
         )
-    )
     );
   }
 

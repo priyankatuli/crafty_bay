@@ -3,6 +3,7 @@ import 'package:crafty_bay/data/models/product_details_model.dart';
 import 'package:crafty_bay/presentation/state_holders/add_to_cart_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/auth_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/product_details_controller.dart';
+import 'package:crafty_bay/presentation/ui/screens/cart_list_screen.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/app_colors.dart';
 import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
@@ -155,8 +156,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           decimalPlaces: 0,
           color: AppColors.themeColor,
           onChanged: (value) {
-            quantity = value.toInt();
-            setState(() {});
+            setState(() {
+              quantity = value.toInt(); // trigger UI rebuild
+            });
           },
         ),
       ],
@@ -212,6 +214,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Widget _buildPriceAndAddToCartSection(ProductDetailsModel productDetails) {
+
+    double basePrice = double.tryParse(productDetails.product?.price ?? '0') ?? 0;
+
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -228,7 +234,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             children: [
               const Text('Price'),
               Text(
-                '\$${productDetails.product?.price}',
+                '\$${(basePrice*quantity).toStringAsFixed(1)}',
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -272,6 +278,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       if (result) {
         if (mounted) {
           showSnackBarMessage(context, 'Added to cart Successfully');
+          Get.to(() => CartListScreen());  //Navigate to cart screen
         }
       }
     }else {

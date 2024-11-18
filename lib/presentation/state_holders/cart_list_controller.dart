@@ -17,9 +17,18 @@ class CartListController extends GetxController{
   List<CartItemModel> _cart = [];
   List<CartItemModel> get cart => _cart;
 
-  int _totalPrice = 0;
-  int get totalPrice => _totalPrice;
-//getCartList
+
+
+  double get totalPrice {
+    return _cart.fold(0, (sum, item) {
+      double qty = double.tryParse(item.qty ?? '0') ?? 0;
+      double price = double.tryParse(item.product?.price ?? '0') ?? 0;
+      return sum + (qty * price);
+    });
+  }
+
+
+//to fetch getCartList
   Future<bool> getCartList() async{
 
     bool isSuccess = false;
@@ -35,14 +44,13 @@ class CartListController extends GetxController{
      );
      if (response.isSuccess && response.responseData['msg'] == 'success') {
        _cart = CartListModel.fromJson(response.responseData).cartList ?? [];
-       for(CartItemModel cart in _cart){
-         _totalPrice += int .parse(cart.qty ?? '');
-       }
        _errorMessage = null;
+       update();
        isSuccess = true;
      }
      else {
        _errorMessage = response.errorMessage ?? '';
+       update();
        isSuccess = false;
      }
    }
@@ -52,28 +60,6 @@ class CartListController extends GetxController{
     return isSuccess;
   }
 
-  /*
-  double get totalPrice{
-    double _totalPrice = 0;
-    for(CartItemModel cartItem in _cart){
-      // Convert qty and price to double safely
-     double quantity = double.tryParse(cartItem.qty ?? '0') ?? 0;
-     double price = double.tryParse(cartItem.product?.price ?? '0') ?? 0;
-     _totalPrice = quantity*price;
-    }
-    return _totalPrice;
-
-  }
-  //Delete Cart List
-void _deleteCartItem(int cartId){
-    _cart.removeWhere((c) => c.id == cartId); // cartItem if matches the cartId then remove the cart
-}
-
-void changeProductQuantity(int cartId, int quantity){
-    _cart.firstWhere((c) => c.id == cartId).qty == quantity; //if the item has found then item qty is updated to the new quantity// firstwhere - return the first item
-    update(); // the state has changed
-}
-*/
 
   Future<bool> deleteCartList(int cartId) async{
 

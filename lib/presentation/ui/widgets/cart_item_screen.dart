@@ -23,11 +23,12 @@ class CartItemScreen extends StatefulWidget {
 
 class _CartItemScreenState extends State<CartItemScreen> {
 
-  late final int _counterValue;
+  late int _counterValue;
 
   void initState(){
     super.initState();
-    _counterValue = widget.cartItem.qty! as int;
+    //_counterValue = widget.cartItem.qty! as int;
+    _counterValue = int.tryParse(widget.cartItem.qty ?? '1') ?? 1;
   }
   @override
   Widget build(BuildContext context) {
@@ -40,53 +41,62 @@ class _CartItemScreenState extends State<CartItemScreen> {
       }
       return check;
     }
-
-
-
+    //final cartListController = Get.find<CartListController>().deleteCartList(widget.cartItem.id!);
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Card(
-      elevation: 2,
-      color: Colors.white,
-      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 6),
-      child: Row(
-        children: [
-          _buildProductImage(),
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(widget.cartItem.product?.title ?? 'No product title found',style: textTheme.bodyLarge,),
-                          _buildColorAndSize(textTheme)
-                        ],
+    return Padding(
+      padding: const EdgeInsets.all(0),
+      child: Card(
+        elevation: 3,
+        color: Colors.white,
+        margin: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+        child: Row(
+          children: [
+            _buildProductImage(),
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(widget.cartItem.product?.title ?? 'No product title found',style: textTheme.bodyLarge,),
+                            _buildColorAndSize(textTheme)
+                          ],
+                        ),
                       ),
-                    ),
-                    IconButton(onPressed: () async {
-                      bool result = await Get.find<CartListController>().deleteCartList(widget.cartItem.id!);
-                      if(result) {
-                        if (mounted) {
-                          showSnackBarMessage(context, 'Delete cart list successfully');
-                          _initialize();
+                      GetBuilder<CartListController>(
+                        builder: (cartListController) {
+                          return IconButton(
+                              onPressed: () async {
+                            bool result = await cartListController.deleteCartList(widget.cartItem.id!);
+                            if (result) {
+                              if (mounted) {
+                                showSnackBarMessage(
+                                    context, 'Delete cart list successfully');
+                                setState(() {
+                                  //_initialize(); //refetch cart list or update UI
+                                });
+                              }
+                            } else {
+                              showSnackBarMessage(context, 'Please login!');
+                              //showSnackBarMessage(context, CartListController().errorMessage ?? '');
+                              Get.to(() => const EmailVerificationScreen());
+                            }
+                          }
+                              , icon: Icon(Icons.delete, color: Colors.grey,));
                         }
-                      }else{
-                        showSnackBarMessage(context, 'Please login!');
-                        //showSnackBarMessage(context, CartListController().errorMessage ?? '');
-                        Get.to(() => const EmailVerificationScreen());
-                      }
-                    }
-                    , icon: Icon(Icons.delete,color: Colors.grey,))
-                  ],
-                ),
-                _buildPriceAndCountSection(textTheme,context),
-              ],
-            ),
-          )
-        ],
+                      )
+                    ],
+                  ),
+                  _buildPriceAndCountSection(textTheme,context),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -119,10 +129,14 @@ class _CartItemScreenState extends State<CartItemScreen> {
                     maxValue: 20,
                     decimalPlaces: 0,
                     color: AppColors.themeColor,
-                    onChanged: (value) {
-                       _counterValue = value as int;
+                    onChanged: (value) async {
                        setState(() {
+                         _counterValue = value as int;
                        });
+
+                       // Update cart item quantity if needed
+                       widget.cartItem.qty = _counterValue.toString();
+                       await Get.find<CartListController>().getCartList(); //refetch cart list or update UI
 
                     },
                   ),

@@ -17,7 +17,6 @@ class ProductDetailsController extends GetxController{
   ProductDetailsModel? get productModel =>_productModel;
 
 
-
   Future<bool> getNewProductList(int productId) async{
 
     bool isSuccess = false;

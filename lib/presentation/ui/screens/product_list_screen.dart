@@ -59,9 +59,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               return GridView.builder(
                   itemCount: productListByCategoryController.productList.length,
                   itemBuilder: (context, index) {
-                    return ProductCard(
-                      product: productListByCategoryController.productList[index]
-                    );
+                    return ProductCard(product: productListByCategoryController.productList[index]);
                   },
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
