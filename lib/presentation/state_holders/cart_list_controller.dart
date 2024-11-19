@@ -70,13 +70,13 @@ class CartListController extends GetxController{
     final String ? token = await AuthController.accessToken;
 
     if(token != null) {
-      final NetworkResponse response = await Get.find<NetworkCaller>()
-          .getRequest(
+      final NetworkResponse response = await Get.find<NetworkCaller>().getRequest(
           url: Urls.deleteCartList(cartId),
           token: token
       );
       if (response.isSuccess && response.responseData['msg'] == 'success') {
-        //_deleteCartItem(cartId);
+        // Remove the item from the local cart list
+        _cart.removeWhere((item) => item.productId == cartId);
         _errorMessage = null;
         isSuccess = true;
       } else {
@@ -89,8 +89,6 @@ class CartListController extends GetxController{
     update();
 
     return isSuccess;
-
-
 
 
   }

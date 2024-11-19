@@ -1,6 +1,8 @@
+
 import 'package:crafty_bay/presentation/state_holders/bottom_nav_bar_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/cart_list_controller.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
+import 'package:crafty_bay/presentation/ui/screens/home_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/cart_item_screen.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
@@ -16,14 +18,10 @@ class CartListScreen extends StatefulWidget{
   }
 
 }
+
 class _CartListScreenState extends State<CartListScreen>{
 
   final cartController = Get.find<CartListController>();
-
-  void initState() {
-    super.initState();
-     _initializer();
-  }
 
   Future<void> _initializer()async{
     bool result = await Get.find<CartListController>().getCartList();
@@ -33,70 +31,78 @@ class _CartListScreenState extends State<CartListScreen>{
     }
   }
 
+  void initState(){
+    super.initState();
+    _initializer();
+  }
+
   @override
   Widget build(BuildContext context) {
      return PopScope(
        canPop: false,
-       onPopInvokedWithResult: (value, _) {
-         backToHome();
+       onPopInvokedWithResult: (value,_){
+            Get.find<BottomNavBarController>().backToHome();
        },
        child: Scaffold(
-           backgroundColor: Colors.grey.shade100,
-           appBar: AppBar(
-             title: Text('Cart'),
-             leading: IconButton(
-                 onPressed: (){
-                   backToHome();
-                 },
-                 icon: Icon(Icons.arrow_back_ios_new,color: Colors.grey,)
-             ),
-           ),
-               body: RefreshIndicator(
-                 onRefresh: () async{
-                   Get.find<CartListController>().getCartList();
-                 },
-                 child: GetBuilder<CartListController>(
-                     builder: (cartListController) {
-                       if(cartListController.inProgress){
-                         return CenteredProgressIndicator();
-                       }
-                       else if(cartListController.errorMessage != null){
-                         return Center(
-                           child: Text(cartListController.errorMessage ?? ''),
-                         );
-                       } else if(cartListController.cart.isEmpty){
-                         return Center(
-                           child: Text('Cart list empty'),
-                         );
-                       } else {
-                         return Column(
-                           children: [
-                             Expanded(
-                               child: ListView.builder(
-                                   itemCount: cartListController.cart.length,
-                                   itemBuilder: (context, index) {
-                                     return CartItemScreen(
-                                       cartItem: cartListController.cart[index],);
-                                   }
-                               ),
-                             ),
-                             _buildPriceAndAddToCartSection(),
-                           ],
-                         );
-                       }
-                     }
-                   ),
+               backgroundColor: Colors.grey.shade100,
+               appBar: AppBar(
+                 title: Text('Cart'),
+                 leading: IconButton(
+                     onPressed: (){
+                       print('Back button pressed');
+                       Get.find<BottomNavBarController>().backToHome();
+                     },
+                     icon: Icon(Icons.arrow_back_ios_new,color: Colors.grey,)
+                 ),
+               ),
+                   body: RefreshIndicator(
+                     onRefresh: () async{
+                       Get.find<CartListController>().getCartList();
+                     },
+                     child: GetBuilder<CartListController>(
+                         builder: (cartListController) {
+                           if(cartListController.inProgress){
+                             return CenteredProgressIndicator();
+                           }
+                           else if(cartListController.errorMessage != null){
+                             return Center(
+                               child: Text(cartListController.errorMessage ?? ''),
+                             );
+                           } else if(cartListController.cart.isEmpty){
+                             return Center(
+                               child: Text('Cart list empty', style: TextStyle(
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: 20
+                               ),),
+                             );
+                           } else {
+                             return Column(
+                               children: [
+                                 Expanded(
+                                   child: ListView.builder(
+                                       itemCount: cartListController.cart.length,
+                                       itemBuilder: (context, index) {
+                                         return CartItemScreen(
+                                           cartItem: cartListController.cart[index],
+                                           index : index
+                                         );
+                                       }
+                                   ),
+                                 ),
+                                 _buildPriceAndAddToCartSection(),
+                               ],
+                             );
+                           }
+                         }
+                       ),
 
-               ),
-               ),
+                   ),
+         ),
      );
   }
 
-  void backToHome(){
-    Get.find<BottomNavBarController>().backToHome();
-  }
-
   Widget _buildPriceAndAddToCartSection() {
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -139,6 +145,14 @@ class _CartListScreenState extends State<CartListScreen>{
       ),
     );
   }
+
+  void dispose(){
+
+    super.dispose();
+
+  }
+
+
 }
 
 
