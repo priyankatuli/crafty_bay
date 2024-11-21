@@ -27,6 +27,7 @@ dependencies:
   shared_preferences: ^2.2.3
   item_count_number_button: ^1.9.2
   shimmer: ^3.0.0
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
 

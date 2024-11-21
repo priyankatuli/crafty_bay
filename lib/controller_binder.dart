@@ -1,4 +1,6 @@
 import 'package:crafty_bay/data/services/network_caller.dart';
+import 'package:crafty_bay/presentation/state_holders/payment_method_list_controller.dart';
+import 'package:crafty_bay/presentation/state_holders/review_screen_controller.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:logger/web.dart';
@@ -41,5 +43,7 @@ class ControllerBinder extends Bindings{
     Get.lazyPut(() => OtpVerificationController(),fenix: true);
     Get.lazyPut(() => ReadProfileController(),fenix: true);
     Get.lazyPut(() => CountdownTimerController(),fenix: true);
+    Get.lazyPut(() => PaymentMethodListController(),fenix: true);
+    Get.lazyPut(() => ReviewScreenController(),fenix: true);
   }
 }
