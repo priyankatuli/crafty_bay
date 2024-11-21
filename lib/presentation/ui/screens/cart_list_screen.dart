@@ -2,7 +2,7 @@
 import 'package:crafty_bay/presentation/state_holders/bottom_nav_bar_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/cart_list_controller.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
-import 'package:crafty_bay/presentation/ui/screens/home_screen.dart';
+import 'package:crafty_bay/presentation/ui/screens/payment_details_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/cart_item_screen.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
@@ -130,8 +130,7 @@ class _CartListScreenState extends State<CartListScreen>{
             width: 140,
             child: ElevatedButton(
                 onPressed: (){
-                    // Get.to(() => const CheckoutScreen());
-                  //navigate to payment screen
+                  _onTapCheckOutButton();
                 },
                 child: Text('Checkout',
                   style: TextStyle(
@@ -144,6 +143,10 @@ class _CartListScreenState extends State<CartListScreen>{
         ],
       ),
     );
+  }
+
+  void _onTapCheckOutButton(){
+    Get.to(() => PaymentDetailsScreen());
   }
 
   void dispose(){
