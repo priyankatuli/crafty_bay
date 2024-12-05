@@ -37,13 +37,6 @@ class PopularProductListScreen extends StatelessWidget {
               if(popularProductListController.productList.isEmpty){
                 return Center(
                     child: EmptyListWidget()
-                  /*Text('Empty product list!',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500
-                  )
-                  ),
-                   */
                 );
               }
               return GridView.builder(
@@ -58,9 +51,9 @@ class PopularProductListScreen extends StatelessWidget {
                   },
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      childAspectRatio: 0.5,
+                      childAspectRatio: 0.59,
                       mainAxisSpacing: 8,
-                      crossAxisSpacing: 8
+                      crossAxisSpacing: 6.5
                   )
               );
             }

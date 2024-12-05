@@ -47,13 +47,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
               if(productListByCategoryController.productList.isEmpty){
                 return Center(
                   child: EmptyListWidget()
-                  /*Text('Empty product list!',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500
-                  )
-                  ),
-                   */
                 );
               }
               return GridView.builder(

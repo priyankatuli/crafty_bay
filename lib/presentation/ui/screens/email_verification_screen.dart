@@ -1,6 +1,6 @@
 import 'package:crafty_bay/presentation/state_holders/email_verification_controller.dart';
 import 'package:crafty_bay/presentation/ui/utils/app_constants.dart';
-import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
+import 'package:crafty_bay/presentation/ui/utils/show_snack_bar_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/app_logo_widget.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +89,7 @@ Future<void> _moveToNextScreen()async{
       Get.to(() => OtpVerificationScreen(email: _emailTEController.text.trim(),));
     }else{
       if(mounted) {
-        showSnackBarMessage(
+        ShowSnackBarMessage(
             context, _emailVerificationController.errorMessage!, true);
       }
     }

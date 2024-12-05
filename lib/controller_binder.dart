@@ -1,6 +1,9 @@
 import 'package:crafty_bay/data/services/network_caller.dart';
+import 'package:crafty_bay/presentation/state_holders/add_to_wishlist.dart';
+import 'package:crafty_bay/presentation/state_holders/delete_wish_list_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/payment_method_list_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/review_screen_controller.dart';
+import 'package:crafty_bay/presentation/state_holders/wishlist_controller.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:logger/web.dart';
@@ -40,6 +43,9 @@ class ControllerBinder extends Bindings{
     Get.put(EmailVerificationController());
     Get.put(AddToCartController());
     Get.lazyPut(() => CartListController(),fenix: true);
+    Get.lazyPut(() => WishlistController(),fenix: true);
+    Get.lazyPut(() => AddToWishList(),fenix: true);
+    Get.lazyPut(() => DeleteWishListController(),fenix: true);
     Get.lazyPut(() => OtpVerificationController(),fenix: true);
     Get.lazyPut(() => ReadProfileController(),fenix: true);
     Get.lazyPut(() => CountdownTimerController(),fenix: true);

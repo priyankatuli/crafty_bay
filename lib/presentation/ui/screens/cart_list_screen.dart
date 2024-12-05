@@ -3,9 +3,10 @@ import 'package:crafty_bay/presentation/state_holders/bottom_nav_bar_controller.
 import 'package:crafty_bay/presentation/state_holders/cart_list_controller.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
 import 'package:crafty_bay/presentation/ui/screens/payment_details_screen.dart';
-import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
+import 'package:crafty_bay/presentation/ui/utils/show_snack_bar_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/cart_item_screen.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
+import 'package:crafty_bay/presentation/ui/widgets/empty_cart_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,31 +27,29 @@ class _CartListScreenState extends State<CartListScreen>{
   Future<void> _initializer()async{
     bool result = await Get.find<CartListController>().getCartList();
     if(result == false){
-      showSnackBarMessage(context, 'Please login!');
+      ShowSnackBarMessage(context, 'Please login!');
       Get.to(() => const EmailVerificationScreen());
     }
   }
 
   void initState(){
     super.initState();
-    _initializer();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _initializer();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-     return PopScope(
-       canPop: false,
-       onPopInvokedWithResult: (value,_){
-            Get.find<BottomNavBarController>().backToHome();
-       },
-       child: Scaffold(
+     return Scaffold(
                backgroundColor: Colors.grey.shade100,
                appBar: AppBar(
                  title: Text('Cart'),
                  leading: IconButton(
                      onPressed: (){
                        print('Back button pressed');
-                       Get.find<BottomNavBarController>().backToHome();
+                       //Get.find<BottomNavBarController>().backToHome();
+                       Get.back();
                      },
                      icon: Icon(Icons.arrow_back_ios_new,color: Colors.grey,)
                  ),
@@ -70,10 +69,7 @@ class _CartListScreenState extends State<CartListScreen>{
                              );
                            } else if(cartListController.cart.isEmpty){
                              return Center(
-                               child: Text('Cart list empty', style: TextStyle(
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: 20
-                               ),),
+                               child: EmptyCartList()
                              );
                            } else {
                              return Column(
@@ -95,9 +91,7 @@ class _CartListScreenState extends State<CartListScreen>{
                            }
                          }
                        ),
-
                    ),
-         ),
      );
   }
 
@@ -118,7 +112,7 @@ class _CartListScreenState extends State<CartListScreen>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Total Price'),
-              Text(cartController.totalPrice.toStringAsFixed(1),
+              Text('\$${cartController.totalPrice}',
                 style: TextStyle(
                     fontSize: 18,
                     color: AppColors.themeColor
@@ -150,9 +144,7 @@ class _CartListScreenState extends State<CartListScreen>{
   }
 
   void dispose(){
-
     super.dispose();
-
   }
 
 

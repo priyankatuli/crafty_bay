@@ -1,44 +1,29 @@
-
 import 'package:crafty_bay/data/models/product_model.dart';
 
-class CartItemModel {
+class WishListItem {
   int? id;
-  int? userId;
   int? productId;
-  String? color;
-  String? size;
-  String? qty;
-  String? price;
+  int? userId;
   String? createdAt;
   String? updatedAt;
   ProductModel? product;
 
-  CartItemModel(
+  WishListItem(
       {this.id,
-        this.userId,
         this.productId,
-        this.color,
-        this.size,
-        this.qty,
-        this.price,
+        this.userId,
         this.createdAt,
         this.updatedAt,
         this.product});
 
-  CartItemModel.fromJson(Map<String, dynamic> json) {
+  WishListItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    userId = json['user_id'];
     productId = json['product_id'];
-    color = json['color'];
-    size = json['size'];
-    qty = json['qty'];
-    price = json['price'];
+    userId = json['user_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     product =
     json['product'] != null ? ProductModel.fromJson(json['product']) : null;
   }
 
-
 }
-

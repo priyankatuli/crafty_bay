@@ -28,22 +28,22 @@ dependencies:
   item_count_number_button: ^1.9.2
   shimmer: ^3.0.0
   webview_flutter: ^4.10.0
+  flutter_launcher_icons: ^0.14.1
+
+
 
 dev_dependencies:
-
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.13.1
 
-
-
-
-  flutter_lints: ^4.0.0
+flutter_lints: ^4.0.0
 flutter_launcher_icons:
-    android: true
-    ios: true
-    image_path: "assets/icons/shopping_cart.png"
-    min_sdk_android: 21
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -70,10 +70,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+      - family: Roboto
+        fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 200
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

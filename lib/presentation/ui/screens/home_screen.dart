@@ -84,14 +84,14 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 8,),
           AppBarIconButton(
             onTap: () {},
-            iconData: Icons.call,
+            iconData: Icons.notifications_active_outlined,
           ),
           const SizedBox(width: 8,),
           Padding(
             padding: EdgeInsets.only(right: 6),
             child: AppBarIconButton(
               onTap: () {},
-              iconData: Icons.notifications_active_outlined,
+              iconData: Icons.logout_rounded,
             ),
           ),
         ],

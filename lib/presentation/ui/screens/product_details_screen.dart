@@ -1,31 +1,39 @@
 import 'package:crafty_bay/data/models/cart_model.dart';
 import 'package:crafty_bay/data/models/product_details_model.dart';
 import 'package:crafty_bay/presentation/state_holders/add_to_cart_controller.dart';
+import 'package:crafty_bay/presentation/state_holders/add_to_wishlist.dart';
 import 'package:crafty_bay/presentation/state_holders/auth_controller.dart';
 import 'package:crafty_bay/presentation/state_holders/product_details_controller.dart';
+import 'package:crafty_bay/presentation/state_holders/wishlist_controller.dart';
 import 'package:crafty_bay/presentation/ui/screens/cart_list_screen.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
+import 'package:crafty_bay/presentation/ui/screens/wish_list_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/app_colors.dart';
-import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
+import 'package:crafty_bay/presentation/ui/utils/show_snack_bar_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
 import 'package:crafty_bay/presentation/ui/widgets/product_image_slider.dart';
 import 'package:crafty_bay/presentation/ui/widgets/size_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:item_count_number_button/item_count_number_button.dart';
-
 import 'review_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key, required this.productId});
+  const ProductDetailsScreen({super.key, required this.productId,});
 
   final int productId;
+
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+
+  final AddToWishList _createWishListController = Get.find<AddToWishList>();
+
+  bool isAddedWishList = false;
+
   String _selectedColor = '';
   String _selectedSize = '';
   int quantity = 1;
@@ -33,7 +41,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    Get.find<ProductDetailsController>().getNewProductList(widget.productId);
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      Get.find<ProductDetailsController>().getNewProductList(widget.productId);
+      if(AuthController.accessToken != null){
+        Get.find<WishlistController>().getWishlist();
+        _checkProductInWishList();
+      }
+    });
+  }
+
+  void _checkProductInWishList(){
+    _createWishListController.isAddedWishList(widget.productId);
+    setState(() {
+      isAddedWishList = _createWishListController.isProductAdded;
+    });
   }
 
   @override
@@ -55,9 +76,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             return Column(
               children: [
                 Expanded(
-                  child: _buildProductDetails(productDetailsController.productModel!),
+                  child: _buildProductDetails(
+                      productDetailsController.productModel!),
                 ),
-                _buildPriceAndAddToCartSection(productDetailsController.productModel!)
+                _buildPriceAndAddToCartSection(
+                    productDetailsController.productModel!)
               ],
             );
           }),
@@ -109,8 +132,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 SizePicker(
                   sizes: sizes,
                   onSizedSelected: (String selectedSize) {
-                  _selectedSize = selectedSize;
-                },
+                    _selectedSize = selectedSize;
+                  },
                 ),
                 const SizedBox(height: 16),
                 _buildDescriptionSection(product)
@@ -128,7 +151,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       children: [
         Text(
           'Description',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleMedium,
         ),
         const SizedBox(height: 8),
         Text(
@@ -146,7 +172,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Expanded(
           child: Text(
             productDetails.product?.title ?? '',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleMedium,
           ),
         ),
         ItemCount(
@@ -192,31 +221,55 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
         ),
         const SizedBox(width: 8),
-        Card(
-          color: AppColors.themeColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          child: InkWell(
-            onTap: (){
-
+        InkWell(
+            onTap: () async {
+              final authController = Get.find<AuthController>();
+              final addToWishlistControlller = Get.find<AddToWishList>();
+              if (authController.isLoggedInUser()) {
+                bool result = await addToWishlistControlller.createWishList(
+                    widget.productId);
+                if (result) {
+                  ShowSnackBarMessage(context, 'Added to wishlist');
+                  Get.to(() => WishListScreen());
+                } else {
+                  ShowSnackBarMessage(context, 'please login');
+                  Get.to(() => EmailVerificationScreen());
+                }
+              } else {
+                ShowSnackBarMessage(context, 'Please Login');
+                Get.to(() => EmailVerificationScreen());
+              }
             },
-            child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Icon(
-                Icons.favorite_outline_outlined,
-                size: 16,
-                color: Colors.white,
-              ),
-            ),
-          ),
+            child: GetBuilder<AddToWishList>(
+                builder: (addToWishListController) {
+                  return Visibility(
+                      visible: addToWishListController.inProgress == false,
+                      replacement: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CenteredProgressIndicator(),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(4),
+                        height: 20,
+                        width: 20,
+                        decoration: BoxDecoration(
+                          color: AppColors.themeColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Icon(Icons.favorite_outline_outlined,
+                          color: Colors.white,
+                          size: 13,),)
+                  );
+                }
+            )
         )
       ],
     );
   }
 
   Widget _buildPriceAndAddToCartSection(ProductDetailsModel productDetails) {
-
     double basePrice = double.tryParse(productDetails.product?.price ?? '0') ?? 0;
-
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -234,7 +287,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             children: [
               const Text('Price'),
               Text(
-                '\$${(basePrice*quantity).toStringAsFixed(1)}',
+                '\$${(basePrice * quantity).toStringAsFixed(1)}',
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -251,8 +304,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     replacement: CenteredProgressIndicator(),
                     child: ElevatedButton(
                       onPressed: _onTapAddToCart,
-                      child: const Text('Added To cart ',style: TextStyle(
-                        fontSize: 18
+                      child: const Text('Added To cart ', style: TextStyle(
+                          fontSize: 18,
                       ),),
                     ),
                   );
@@ -276,16 +329,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               quantity: quantity
           ));
       if (result) {
-        if (mounted) {
-          showSnackBarMessage(context, 'Added to cart Successfully');
-          Get.to(() => CartListScreen());  //Navigate to cart screen
-        }
-      }
-    }else {
-        if (mounted) {
-          showSnackBarMessage(context, 'you need to first login!');
-          Get.to(() => const EmailVerificationScreen());
-        }
+        ShowSnackBarMessage(context, 'Added to cart Successfully');
+        Get.to(() => CartListScreen());  //Navigate to cart screen
+        /*showDialog(
+          context: context,
+          builder: (_) =>
+              AlertDialog(
+                title: Text('Item Added to Cart'),
+                content: Text(
+                    'Do you want to view your cart or continue shopping?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Get.back(), // Close dialog
+                    child: Text('Continue Shopping'),
+                  ),
+                  TextButton(
+                    onPressed: () => Get.to(() => CartListScreen()),
+                    child: Text('View Cart'),
+                  ),
+                ],
+              ),);
+
+         */
+      } else {
+        ShowSnackBarMessage(context, 'you need to first login!');
+        Get.to(() => const EmailVerificationScreen());
       }
     }
   }
+}

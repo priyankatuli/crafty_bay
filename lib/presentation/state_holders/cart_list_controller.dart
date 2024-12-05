@@ -17,18 +17,11 @@ class CartListController extends GetxController{
   List<CartItemModel> _cart = [];
   List<CartItemModel> get cart => _cart;
 
+  int _totalPrice = 0;
+  int get totalPrice => _totalPrice;
 
 
-  double get totalPrice {
-    return _cart.fold(0, (sum, item) {
-      double qty = double.tryParse(item.qty ?? '0') ?? 0;
-      double price = double.tryParse(item.product?.price ?? '0') ?? 0;
-      return sum + (qty * price);
-    });
-  }
-
-
-//to fetch getCartList
+    //to fetch getCartList
   Future<bool> getCartList() async{
 
     bool isSuccess = false;
@@ -44,8 +37,8 @@ class CartListController extends GetxController{
      );
      if (response.isSuccess && response.responseData['msg'] == 'success') {
        _cart = CartListModel.fromJson(response.responseData).cartList ?? [];
+       _calculateTotalPrice(); // calculate total price after fetching data
        _errorMessage = null;
-       update();
        isSuccess = true;
      }
      else {
@@ -59,7 +52,6 @@ class CartListController extends GetxController{
     update();
     return isSuccess;
   }
-
 
   Future<bool> deleteCartList(int cartId) async{
 
@@ -77,6 +69,7 @@ class CartListController extends GetxController{
       if (response.isSuccess && response.responseData['msg'] == 'success') {
         // Remove the item from the local cart list
         _cart.removeWhere((item) => item.productId == cartId);
+        _calculateTotalPrice(); //after deletion recalculate total price
         _errorMessage = null;
         isSuccess = true;
       } else {
@@ -84,15 +77,32 @@ class CartListController extends GetxController{
         isSuccess = false;
       }
     }
-
     _inProgress = false;
     update();
-
     return isSuccess;
-
-
   }
 
+  void _calculateTotalPrice(){
 
+    _totalPrice = 0;
+    for (CartItemModel cart in _cart){
+      int unitPrice = int.parse(cart.product?.price ?? '0') ;
+      int quantity = int.parse(cart.qty ?? '1');
+      _totalPrice += unitPrice * quantity;
+    }
+    update();
+  }
 
-}
+  void updateQuantity(int productId, newQuantity){
+
+    for(CartItemModel cartItem in _cart){
+      if(cartItem.productId == productId){
+        cartItem.qty = newQuantity.toString();  //update quantity
+        break;
+      }
+    }
+    _calculateTotalPrice(); //recalculate total price
+    update(); //notify the UI to rebuild
+  }
+
+  }

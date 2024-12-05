@@ -5,7 +5,7 @@ import 'package:crafty_bay/presentation/state_holders/otp_verification_controlle
 import 'package:crafty_bay/presentation/state_holders/read_profile_controller.dart';
 import 'package:crafty_bay/presentation/ui/screens/main_bottom_nav_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/app_colors.dart';
-import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
+import 'package:crafty_bay/presentation/ui/utils/show_snack_bar_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -127,7 +127,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           if (_formKey.currentState!.validate()) {
                             _onTapNextButton();
                           } else {
-                            showSnackBarMessage(context, 'Please enter a valid Otp');
+                            ShowSnackBarMessage(context, 'Please enter a valid Otp');
                           }
                         }, child: Text('Next',)),
                       );
@@ -166,11 +166,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     // Call your method to resend the OTP
                    bool resendOtp = await _emailVerificationController.getEmailVerification(widget.email);
                    if(resendOtp && mounted) {
-                       showSnackBarMessage(context, 'Otp has been resent successfully');
+                       ShowSnackBarMessage(context, 'Otp has been resent successfully');
                        // Restart the timer
                        _startTimer();
                    }else{
-                     showSnackBarMessage(context, _emailVerificationController.errorMessage!);
+                     ShowSnackBarMessage(context, _emailVerificationController.errorMessage!);
                    }
                   } : null,
                   child: Text('Resend Code', style: TextStyle(
@@ -182,7 +182,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   }
                 ),
               ],
-            ),
+            )
           ),
         ),
       ),
@@ -207,12 +207,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       }
       else{
       if(mounted){
-        showSnackBarMessage(context, _readProfileController.errorMessage!);
+        ShowSnackBarMessage(context, _readProfileController.errorMessage!);
       }
     }
   } else{
       if(mounted){
-        showSnackBarMessage(context, _otpVerificationController.errorMessage!);
+        ShowSnackBarMessage(context, _otpVerificationController.errorMessage!);
       }
     }
   }

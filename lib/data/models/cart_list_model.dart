@@ -1,5 +1,3 @@
-
-
 import 'package:crafty_bay/data/models/cart_item_model.dart';
 
 class CartListModel {

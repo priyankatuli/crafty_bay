@@ -2,7 +2,7 @@ import 'package:crafty_bay/data/models/cart_item_model.dart';
 import 'package:crafty_bay/presentation/state_holders/cart_list_controller.dart';
 import 'package:crafty_bay/presentation/ui/screens/email_verification_screen.dart';
 import 'package:crafty_bay/presentation/ui/utils/app_colors.dart';
-import 'package:crafty_bay/presentation/ui/utils/snack_message.dart';
+import 'package:crafty_bay/presentation/ui/utils/show_snack_bar_message.dart';
 import 'package:crafty_bay/presentation/ui/widgets/centered_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,7 +14,6 @@ class CartItemScreen extends StatefulWidget {
     super.key,
     required this.cartItem,
     required this.index
-
   });
 
   final CartItemModel cartItem;
@@ -28,19 +27,16 @@ class CartItemScreen extends StatefulWidget {
 class _CartItemScreenState extends State<CartItemScreen> {
 
   late int _counterValue;
-  final controller = Get.find<CartListController>();
 
   void initState(){
+    _counterValue = int.tryParse(widget.cartItem.qty ?? '1') ?? 1;
     super.initState();
-    //_counterValue = widget.cartItem.qty! as int;
-    _counterValue = int.tryParse(controller.cart[widget.index].qty ?? '1') ?? 1;
   }
 
   @override
   Widget build(BuildContext context) {
 
     final TextTheme textTheme = Theme.of(context).textTheme;
-    //final cartListController = Get.find<CartListController>().deleteCartList(widget.cartItem.id!);
 
     return Card(
               elevation: 3,
@@ -64,8 +60,7 @@ class _CartItemScreenState extends State<CartItemScreen> {
                                       crossAxisAlignment: CrossAxisAlignment
                                           .start,
                                       children: [
-                                        Text(cartListController.cart[widget.index]
-                                            .product?.title ??
+                                        Text(widget.cartItem.product?.title ??
                                             'No product title found',
                                           style: textTheme.bodyLarge,),
                                         _buildColorAndSize(textTheme)
@@ -74,24 +69,19 @@ class _CartItemScreenState extends State<CartItemScreen> {
                                   ),
                                   IconButton(
                                       onPressed: () async {
-                                          bool result = await cartListController
-                                              .deleteCartList(
-                                              cartListController.cart[widget.index].productId ?? 0);
+                                          bool result = await cartListController.deleteCartList(widget.cartItem.productId ?? 0);
                                           if (result) {
-                                            if (mounted) {
-                                              showSnackBarMessage(context,
+                                              ShowSnackBarMessage(context,
                                                   'Delete cart list successfully');
-                                            }
                                           }
                                           else {
-                                            showSnackBarMessage(
+                                            ShowSnackBarMessage(
                                                 context,
                                                 'Failed to delete cart item.Please login!');
                                             Get
                                                 .to(() => const EmailVerificationScreen());
                                           }
-                                        }
-                                      ,
+                                        },
                                       icon: Icon(
                                         Icons.delete, color: Colors.grey,)),
                                 ],
@@ -113,10 +103,10 @@ class _CartItemScreenState extends State<CartItemScreen> {
     return Wrap(
                           spacing: 8,
                           children: [
-                            Text('${controller.cart[widget.index].color ?? 'No color selected'}',style: textTheme.bodySmall?.copyWith(
+                            Text('Color : ${widget.cartItem.color ?? 'No color selected'}',style: textTheme.bodySmall?.copyWith(
                                 color: Colors.grey
                             ),),
-                            Text('${controller.cart[widget.index].size ?? 'No size selected'}',style: textTheme.bodySmall?.copyWith(
+                            Text('Size: ${widget.cartItem.size ?? 'No size selected'}',style: textTheme.bodySmall?.copyWith(
                                 color: Colors.grey
                             ),),
                           ],
@@ -125,18 +115,19 @@ class _CartItemScreenState extends State<CartItemScreen> {
 
   Widget _buildPriceAndCountSection(TextTheme textTheme,BuildContext context) {
 
-    double unitPrice = double.tryParse(controller.cart[widget.index].price ?? '0.00') ?? 0;
+    final int unitPrice = int.tryParse(widget.cartItem.product?.price ?? '0') ?? 0;
+    final int itemPrice = unitPrice * _counterValue;
 
     return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('\$${(unitPrice).toStringAsFixed(1)}',
+                Text('\$${itemPrice.toString()}',
                 style: textTheme.titleMedium?.copyWith(
                       color: AppColors.themeColor
                   )),
                   ItemCount(
-                    initialValue: _counterValue,
+                    initialValue: _counterValue, //set initial value from the controller
                     minValue: 1,
                     maxValue: 20,
                     decimalPlaces: 0,
@@ -145,15 +136,11 @@ class _CartItemScreenState extends State<CartItemScreen> {
                       if(mounted) {
                         setState(() {
                           _counterValue = value as int;
-
                         });
-                        controller.cart[widget.index].qty = _counterValue.toString();
+                          //Update the quantity in the cart item
+                        }
+                    Get.find<CartListController>().updateQuantity(widget.cartItem.productId!, _counterValue);
                       }
-
-
-                      // controller.update(); //notify GetBuilder to recalculate totalPrice
-
-                    },
                   ),
                 ],
               );
@@ -165,7 +152,7 @@ class _CartItemScreenState extends State<CartItemScreen> {
           decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                    '${controller.cart[widget.index].product?.image ?? AssetsPath.dummyProductImage}'),
+                    '${widget.cartItem.product?.image ?? AssetsPath.dummyProductImage}'),
                 fit: BoxFit.scaleDown,
               ),
             borderRadius: BorderRadius.only(
